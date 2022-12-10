@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+
 
 void main() {
   runApp(const MyApp());
@@ -144,8 +147,17 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Record',
+      style: optionStyle,
+    ),
+    Text(
+      'Analyze',
+      style: optionStyle,
+    ),
+  ];
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -158,7 +170,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       appBar: AppBar(
         title: const Text('SpeechPrep'),
       ),
-      body: Center(),
+      body: Center(child: _widgetOptions.elementAt(_selectedIndex),),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF5667FD),
         items: const <BottomNavigationBarItem>[
