@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'package:record_mp3/record_mp3.dart';
 
 
 void main() {
@@ -14,7 +15,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'SpeechPrep',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -100,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SizedBox(height: 40),
             Image.asset('assets/SpeechPrep.png', scale: 2),
             SizedBox(height: 90),
             const Text(
@@ -149,10 +152,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
   static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Record',
-      style: optionStyle,
-    ),
+    MyCustomForm(),
     Text(
       'Analyze',
       style: optionStyle,
@@ -186,6 +186,71 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.white,
         onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class MyCustomForm extends StatefulWidget {
+  const MyCustomForm({Key? key}) : super(key: key);
+
+  @override
+  MyCustomFormState createState() {
+    return MyCustomFormState();
+  }
+}
+
+class MyCustomFormState extends State<MyCustomForm> {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+        future: callAsyncFetch(),
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          return getVoice();
+        });
+  }
+
+  Future<String> callAsyncFetch() async {
+    return "hi";
+  }
+
+  Widget getVoice() {
+    final _formKey = GlobalKey<FormState>();
+    int i = 0;
+    return Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: ElevatedButton(
+                onPressed: () {
+
+                  if (_formKey.currentState!.validate()) {
+                    i += 1;
+                    if(i > 1) {
+                      RecordMp3.instance.stop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Recording Stopped')),
+                      );
+                    }
+                    else {
+                      RecordMp3.instance.start("/storage/emulated/0/Download/alpha.mp3", (type) {
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Recording Started')),
+                      );
+                    }
+                  }
+
+                },
+                child: const Icon(Icons.mic),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
