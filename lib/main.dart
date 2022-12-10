@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(height: 20),
             const Text(
               'Analyze and Improve your speaking skills with the power of AI',
-              style: TextStyle(fontSize: 13.0, color:Colors.white, fontFamily: 'Poppins'),
+              style: TextStyle(fontSize: 12.0, color:Colors.white, fontFamily: 'Poppins'),
             ),
             SizedBox(height: 180),
             Container(
@@ -129,6 +129,51 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({Key? key}) : super(key: key);
+
+  @override
+  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('SpeechPrep'),
+      ),
+      body: Center(),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFF5667FD),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.mic),
+            label: 'Record',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.analytics),
+            label: 'Analyze',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        onTap: _onItemTapped,
       ),
     );
   }
