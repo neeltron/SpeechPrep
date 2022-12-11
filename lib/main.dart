@@ -213,38 +213,67 @@ Future<Album> fetchAlbum() async {
       .get(Uri.parse('https://SpeechPrep-API.neeltron.repl.co/analyze'));
 
   if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
     return Album.fromJson(jsonDecode(response.body));
   } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
     throw Exception('Failed to load album');
   }
 }
 
 class Album {
   final String text;
-
+  final String mistakes;
+  final String sentiment_overall;
+  final String sentiment_individual;
+  final String safety;
+  final String score;
   const Album({
     required this.text,
+    required this.mistakes,
+    required this.sentiment_overall,
+    required this.sentiment_individual,
+    required this.safety,
+    required this.score
   });
 
   factory Album.fromJson(Map<String, dynamic> json) {
     return Album(
       text: json['text'],
+      mistakes: json['mistakes'],
+      sentiment_overall: json['sentiment'],
+      sentiment_individual: json['individual'],
+      safety: json['safety_labels'],
+      score: json['score']
     );
   }
 }
 
-
-
 Widget getRequest() {
+  final _formKey = GlobalKey<FormState>();
   Future<Album> futureAlbum = fetchAlbum();
   return FutureBuilder<Album>(    future: futureAlbum,
     builder: (context, snapshot) {
       if (snapshot.hasData) {
-        return Text(snapshot.data!.text, style: const TextStyle(fontSize: 12.0, color:Colors.white, fontFamily: 'Poppins'),);
+        return Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                  Align(alignment: Alignment.center, child: Text("Speech Report", textAlign: TextAlign.center, style: const TextStyle(fontSize: 24.0, color:Colors.green, fontFamily: 'Poppins'),),),
+                  Text("Speech Score: " + snapshot.data!.score + " / 10", style: const TextStyle(fontSize: 16.0, color:Colors.green, fontFamily: 'Poppins'),),
+                  Text("Transcribed Text: " + snapshot.data!.text, style: const TextStyle(fontSize: 14.0, color:Colors.white, fontFamily: 'Poppins'),),
+                  Text("Grammatical Errors:", style: const TextStyle(fontSize: 16.0, color:Colors.green, fontFamily: 'Poppins'),),
+                  Text(snapshot.data!.mistakes, style: const TextStyle(fontSize: 14.0, color:Colors.red, fontFamily: 'Poppins'),),
+                  Text("How your speech sounds to listeners:", style: const TextStyle(fontSize: 16.0, color:Colors.green, fontFamily: 'Poppins'),),
+                  Text("Overall: " + snapshot.data!.sentiment_overall, style: const TextStyle(fontSize: 14.0, color:Colors.white, fontFamily: 'Poppins'),),
+                  Text("Individually: " + snapshot.data!.sentiment_individual, style: const TextStyle(fontSize: 14.0, color:Colors.white, fontFamily: 'Poppins'),),
+                  Text("Warning: You have mentioned the following in your speech-", style: const TextStyle(fontSize: 16.0, color:Colors.red, fontFamily: 'Poppins'),),
+                  Text(snapshot.data!.safety, style: const TextStyle(fontSize: 14.0, color:Colors.white, fontFamily: 'Poppins'),),
+
+              ],
+            ),
+          ),
+        );
       } else if (snapshot.hasError) {
         return Text('${snapshot.error}');
       }
